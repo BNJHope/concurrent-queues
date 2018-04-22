@@ -1,34 +1,14 @@
 package queue
 
-import (
-	"sync"
-)
-
-type QueueElement interface {
+type EmptyQueueError struct {
 }
 
 type Queue interface {
-	enqueue(payload *QueueElement)
-	dequeue() *QueueElement
+	Enqueue(payload *interface{}) error
+	Dequeue() (*interface{}, error)
+	Length() int
 }
 
-type LockingQueue struct {
-	elements []*QueueElement
-	lock     *sync.RWMutex
-}
-
-type LockFreeQueue struct {
-}
-
-func (q *LockingQueue) enqueue(payload *QueueElement) {
-	q.lock.Lock()
-	q.elements.append(payload)
-	q.lock.Unlock()
-}
-
-func (q *LockingQueue) dequeue() (res *QueueElement) {
-	q.lock.Lock()
-	res = q[0]
-	q = q[1:]
-	q.lock.Unlock()
+func (e EmptyQueueError) Error() string {
+	return "empty queue error"
 }
