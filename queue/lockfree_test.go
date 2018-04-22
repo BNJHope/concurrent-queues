@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestLockFreeSingleProducerConsumer(t *testing.T) {
+func TestLockFreeMultiProducerConsumer(t *testing.T) {
 	var (
 		q             = NewLockFreeQueue()
 		lock          sync.Mutex
@@ -81,6 +81,143 @@ func TestLockFreeSingleProducerConsumer(t *testing.T) {
 		t.Log("expected : 0")
 		t.Log("actual : ", endLength)
 		t.Fail()
+	}
+
+}
+
+func BenchmarkLockFreeBench10Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(10, b)
+}
+
+func BenchmarkLockFreeBench20Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(20, b)
+}
+
+func BenchmarkLockFreeBench30Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(30, b)
+}
+
+func BenchmarkLockFreeBench40Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(40, b)
+}
+
+func BenchmarkLockFreeBench50Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(50, b)
+}
+
+func BenchmarkLockFreeBench60Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(60, b)
+}
+
+func BenchmarkLockFreeBench70Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(70, b)
+}
+
+func BenchmarkLockFreeBench80Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(80, b)
+}
+
+func BenchmarkLockFreeBench90Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(90, b)
+}
+
+func BenchmarkLockFreeBench100Enqueues(b *testing.B) {
+	benchLockFreeEnqueue(100, b)
+}
+
+func BenchmarkLockFreeBench10Dequeues(b *testing.B) {
+	benchLockFreeDequeue(10, b)
+}
+
+func BenchmarkLockFreeBench20Dequeues(b *testing.B) {
+	benchLockFreeDequeue(20, b)
+}
+
+func BenchmarkLockFreeBench30Dequeues(b *testing.B) {
+	benchLockFreeDequeue(30, b)
+}
+
+func BenchmarkLockFreeBench40Dequeues(b *testing.B) {
+	benchLockFreeDequeue(40, b)
+}
+
+func BenchmarkLockFreeBench50Dequeues(b *testing.B) {
+	benchLockFreeDequeue(50, b)
+}
+
+func BenchmarkLockFreeBench60Dequeues(b *testing.B) {
+	benchLockFreeDequeue(60, b)
+}
+
+func BenchmarkLockFreeBench70Dequeues(b *testing.B) {
+	benchLockFreeDequeue(70, b)
+}
+
+func BenchmarkLockFreeBench80Dequeues(b *testing.B) {
+	benchLockFreeDequeue(80, b)
+}
+
+func BenchmarkLockFreeBench90Dequeues(b *testing.B) {
+	benchLockFreeDequeue(90, b)
+}
+
+func BenchmarkLockFreeBench100Dequeues(b *testing.B) {
+	benchLockFreeDequeue(100, b)
+}
+
+func benchLockFreeEnqueue(numOfOps int, b *testing.B) {
+	var (
+		q         = NewLockFreeQueue()
+		enqueueWg sync.WaitGroup
+	)
+
+	for run := 0; run < b.N; run++ {
+		enqueueWg.Add(numOfOps)
+		for i := 0; i < numOfOps; i++ {
+			go func(value int, wg *sync.WaitGroup) {
+				var (
+					val interface{} = value
+				)
+				defer wg.Done()
+				_ = q.Enqueue(&val)
+			}(i, &enqueueWg)
+		}
+		enqueueWg.Wait()
+	}
+}
+
+func benchLockFreeDequeue(numOfOps int, b *testing.B) {
+	for run := 0; run < b.N; run++ {
+		var (
+			q         = NewLockFreeQueue()
+			enqueueWg sync.WaitGroup
+			dequeueWg sync.WaitGroup
+		)
+
+		enqueueWg.Add(numOfOps)
+		dequeueWg.Add(numOfOps)
+
+		for i := 0; i < numOfOps; i++ {
+			go func(value int, wg *sync.WaitGroup) {
+				var (
+					val interface{} = value
+				)
+				defer wg.Done()
+				_ = q.Enqueue(&val)
+			}(i, &enqueueWg)
+		}
+
+		enqueueWg.Wait()
+
+		for i := 0; i < numOfOps; i++ {
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				q.Dequeue()
+			}(&dequeueWg)
+		}
+
+		dequeueWg.Wait()
+
 	}
 
 }
