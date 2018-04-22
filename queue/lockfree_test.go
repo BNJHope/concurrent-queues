@@ -21,8 +21,8 @@ func TestLockFreeSingleProducerConsumer(t *testing.T) {
 		t.Fail()
 	}
 
-	enqueueWg.Add(10)
 	for i := 0; i < 10; i++ {
+		enqueueWg.Add(1)
 		go func(value int, expectedQueue chan int, lock *sync.Mutex, wg *sync.WaitGroup) {
 			var (
 				val interface{} = value
@@ -47,8 +47,8 @@ func TestLockFreeSingleProducerConsumer(t *testing.T) {
 		t.Fail()
 	}
 
-	dequeueWg.Add(10)
 	for i := 0; i < 10; i++ {
+		dequeueWg.Add(1)
 		go func(expectedQueue chan int, lock *sync.Mutex, wg *sync.WaitGroup) {
 			defer wg.Done()
 			var (
