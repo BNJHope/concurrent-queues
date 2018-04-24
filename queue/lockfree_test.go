@@ -85,108 +85,141 @@ func TestLockFreeMultiProducerConsumer(t *testing.T) {
 
 }
 
-func BenchmarkLockFreeBench10Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(10, b)
+func TestLockFreeSimultaneousWriterReader(t *testing.T) {
+	var (
+		q  = NewLockFreeQueue()
+		wg sync.WaitGroup
+	)
+
+	wg.Add(200)
+
+	for k := 0; k < 100; k++ {
+		go func(q *LockFreeQueue, wg *sync.WaitGroup) {
+			defer wg.Done()
+			for i := 0; i < 1000; i++ {
+				var val interface{} = i
+				q.Enqueue(&val)
+			}
+		}(q, &wg)
+	}
+
+	for k := 0; k < 100; k++ {
+		go func(q *LockFreeQueue, wg *sync.WaitGroup) {
+			defer wg.Done()
+			for i := 0; i < 1000; i++ {
+				_, _ = q.Dequeue()
+			}
+		}(q, &wg)
+	}
+
+	wg.Wait()
+
 }
 
-func BenchmarkLockFreeBench20Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(20, b)
+func BenchmarkLockFree100Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 100, b)
 }
 
-func BenchmarkLockFreeBench30Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(30, b)
+func BenchmarkLockFree200Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 200, b)
 }
 
-func BenchmarkLockFreeBench40Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(40, b)
+func BenchmarkLockFree300Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 300, b)
 }
 
-func BenchmarkLockFreeBench50Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(50, b)
+func BenchmarkLockFree400Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 400, b)
 }
 
-func BenchmarkLockFreeBench60Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(60, b)
+func BenchmarkLockFree500Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 500, b)
 }
 
-func BenchmarkLockFreeBench70Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(70, b)
+func BenchmarkLockFree600Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 600, b)
 }
 
-func BenchmarkLockFreeBench80Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(80, b)
+func BenchmarkLockFree700Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 700, b)
 }
 
-func BenchmarkLockFreeBench90Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(90, b)
+func BenchmarkLockFree800Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 800, b)
 }
 
-func BenchmarkLockFreeBench100Enqueues(b *testing.B) {
-	benchLockFreeEnqueue(100, b)
+func BenchmarkLockFree900Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 900, b)
 }
 
-func BenchmarkLockFreeBench10Dequeues(b *testing.B) {
-	benchLockFreeDequeue(10, b)
+func BenchmarkLockFree1000Enqueues2Workers(b *testing.B) {
+	benchLockFreeEnqueue(2, 1000, b)
 }
 
-func BenchmarkLockFreeBench20Dequeues(b *testing.B) {
-	benchLockFreeDequeue(20, b)
+func BenchmarkLockFree100Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 100, b)
 }
 
-func BenchmarkLockFreeBench30Dequeues(b *testing.B) {
-	benchLockFreeDequeue(30, b)
+func BenchmarkLockFree200Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 200, b)
 }
 
-func BenchmarkLockFreeBench40Dequeues(b *testing.B) {
-	benchLockFreeDequeue(40, b)
+func BenchmarkLockFree300Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 300, b)
 }
 
-func BenchmarkLockFreeBench50Dequeues(b *testing.B) {
-	benchLockFreeDequeue(50, b)
+func BenchmarkLockFree400Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 400, b)
 }
 
-func BenchmarkLockFreeBench60Dequeues(b *testing.B) {
-	benchLockFreeDequeue(60, b)
+func BenchmarkLockFree500Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 500, b)
 }
 
-func BenchmarkLockFreeBench70Dequeues(b *testing.B) {
-	benchLockFreeDequeue(70, b)
+func BenchmarkLockFree600Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 600, b)
 }
 
-func BenchmarkLockFreeBench80Dequeues(b *testing.B) {
-	benchLockFreeDequeue(80, b)
+func BenchmarkLockFree700Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 700, b)
 }
 
-func BenchmarkLockFreeBench90Dequeues(b *testing.B) {
-	benchLockFreeDequeue(90, b)
+func BenchmarkLockFree800Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 800, b)
 }
 
-func BenchmarkLockFreeBench100Dequeues(b *testing.B) {
-	benchLockFreeDequeue(100, b)
+func BenchmarkLockFree900Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 900, b)
 }
 
-func benchLockFreeEnqueue(numOfOps int, b *testing.B) {
+func BenchmarkLockFree1000Dequeues2Workers(b *testing.B) {
+	benchLockFreeDequeue(2, 1000, b)
+}
+
+func benchLockFreeEnqueue(numOfTasks int, numOfOps int, b *testing.B) {
 	var (
 		q         = NewLockFreeQueue()
 		enqueueWg sync.WaitGroup
 	)
 
 	for run := 0; run < b.N; run++ {
-		enqueueWg.Add(numOfOps)
-		for i := 0; i < numOfOps; i++ {
+		enqueueWg.Add(numOfTasks)
+		for i := 0; i < numOfTasks; i++ {
 			go func(value int, wg *sync.WaitGroup) {
 				var (
 					val interface{} = value
 				)
 				defer wg.Done()
-				_ = q.Enqueue(&val)
+				for j := 0; j < numOfOps; j++ {
+					_ = q.Enqueue(&val)
+				}
 			}(i, &enqueueWg)
 		}
 		enqueueWg.Wait()
 	}
 }
 
-func benchLockFreeDequeue(numOfOps int, b *testing.B) {
+func benchLockFreeDequeue(numOfTasks int, numOfOps int, b *testing.B) {
 	for run := 0; run < b.N; run++ {
 		var (
 			q         = NewLockFreeQueue()
@@ -194,10 +227,10 @@ func benchLockFreeDequeue(numOfOps int, b *testing.B) {
 			dequeueWg sync.WaitGroup
 		)
 
-		enqueueWg.Add(numOfOps)
-		dequeueWg.Add(numOfOps)
+		enqueueWg.Add(numOfTasks * numOfOps)
+		dequeueWg.Add(numOfTasks)
 
-		for i := 0; i < numOfOps; i++ {
+		for i := 0; i < numOfTasks*numOfOps; i++ {
 			go func(value int, wg *sync.WaitGroup) {
 				var (
 					val interface{} = value
@@ -209,10 +242,12 @@ func benchLockFreeDequeue(numOfOps int, b *testing.B) {
 
 		enqueueWg.Wait()
 
-		for i := 0; i < numOfOps; i++ {
+		for i := 0; i < numOfTasks; i++ {
 			go func(wg *sync.WaitGroup) {
 				defer wg.Done()
-				q.Dequeue()
+				for j := 0; j < numOfOps; j++ {
+					q.Dequeue()
+				}
 			}(&dequeueWg)
 		}
 
